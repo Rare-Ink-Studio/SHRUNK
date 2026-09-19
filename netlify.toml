@@ -1,0 +1,17 @@
+# One Home game-hosting configuration. Preserves SHRUNK V10 gameplay and release checks.
+# Publish only the already-generated, verified static game files.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Allow SHRUNK to be embedded by One Home only; this does not itself
+# authenticate a visitor or make the publicly served game assets private.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "frame-ancestors https://doodlabs.app https://www.doodlabs.app https://one-home-test.netlify.app"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
