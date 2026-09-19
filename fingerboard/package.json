@@ -1,0 +1,1 @@
+{"name":"shrunk-tabletop-sessions","private":true,"type":"module","scripts":{"dev":"vite","build":"node scripts/check-release.mjs","test":"node --test tests/*.test.mjs"},"devDependencies":{"vite":"7.1.3"}}

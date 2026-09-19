@@ -1,0 +1,13 @@
+{
+  "name": "shrunk-tabletop-world-v1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs fingerboard/tests/*.test.mjs desk-shot/tests/*.test.mjs marble-run/tests/*.test.mjs tabletop-racing/tests/*.test.mjs",
+    "build": "node scripts/check-release.mjs",
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "vite": "7.1.3"
+  }
+}

@@ -1,0 +1,68 @@
+<!doctype html><html><meta charset="utf-8"><title>SHRUNK local release checks</title><style>body{margin:0;padding:12px;background:#26312a;color:white;font:14px Arial}nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}button{padding:10px}iframe{display:block;border:1px solid #678;margin:auto;background:#111}pre{white-space:pre-wrap;font-size:13px}</style><nav><button data-size="667,280">Short phone 667 × 280</button><button data-size="844,390">iPhone 844 × 390</button><button data-size="932,430">Large phone 932 × 430</button><button data-size="390,844">Portrait 390 × 844</button><button id="run">Run release walkthrough</button><button id="layout">Check visible layout</button><button id="home-preview">Preview HOME</button><button id="play-preview">Preview paused gameplay</button></nav><iframe id="app" title="Current SHRUNK game" src="/index.html" width="844" height="390"></iframe><pre id="results">Preview only. This wrapper and its read-only state probe are excluded from production.</pre><script type="module">
+const frame=document.querySelector('iframe'),output=document.querySelector('pre');
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const doc=()=>frame.contentDocument,win=()=>frame.contentWindow,el=id=>doc().getElementById(id);
+const click=id=>el(id).click(),state=()=>win().__releaseState();
+let lines=[],errors=[];
+function note(msg){lines.push(msg);output.textContent=lines.join('\n');}
+function check(ok,label){note(`${ok?'PASS':'FAIL'} ${label}`);if(!ok)throw Error(label);}
+async function until(fn,label,timeout=2500){const end=performance.now()+timeout;while(!fn()){if(performance.now()>end)throw Error(`Timed out: ${label}`);await wait(20);}}
+async function size(w,h){frame.width=w;frame.height=h;await wait(180);}
+function safeInsets(){const s=el('game').style;s.setProperty('--safe-left','44px');s.setProperty('--safe-right','44px');s.setProperty('--safe-bottom','21px');s.setProperty('--safe-top','0px');win().dispatchEvent(new Event('resize'));}
+async function reload(){await new Promise(resolve=>{frame.onload=resolve;frame.src='/index.html';});await until(()=>win().__releaseState,'app initialization');win().addEventListener('error',e=>errors.push(e.message));win().addEventListener('unhandledrejection',e=>errors.push(String(e.reason)));safeInsets();await wait(100);}
+function home(){if(state().mode!=='ready'){if(!el('pause-dialog').open)click('pause');click('home');}}
+function pointer(type,id,x,y,surface='park'){const rect=el('park').getBoundingClientRect();el(surface).dispatchEvent(new (win().PointerEvent)(type,{pointerId:id,pointerType:'touch',clientX:x+rect.left,clientY:y+rect.top,button:0,buttons:type==='pointerup'||type==='pointercancel'?0:1,bubbles:true,cancelable:true}));}
+function layout(){const w=win().innerWidth,h=win().innerHeight;const nodes=[...doc().querySelectorAll('.hud,.start-card,h1,.start-card>p,.start-buttons button,#front-pad,#rear-pad,.pad-copy strong,.pad-copy .eyebrow,#demo-pop,dialog[open],dialog[open] button')].filter(n=>n.getClientRects().length&&win().getComputedStyle(n).visibility!=='hidden');return {width:w,height:h,scroll:[doc().documentElement.scrollWidth,doc().documentElement.scrollHeight],elements:nodes.map(n=>{const r=n.getBoundingClientRect();return {name:n.id||n.className||n.tagName,x:r.x,y:r.y,width:r.width,height:r.height,fits:r.x>=-1&&r.y>=-1&&r.right<=w+1&&r.bottom<=h+1}})};}
+function layoutCheck(label){const l=layout();check(l.elements.every(n=>n.fits)&&l.scroll[0]===l.width&&l.scroll[1]===l.height,`${label}: no clipped elements or document overflow`);}
+for(const button of document.querySelectorAll('[data-size]'))button.onclick=async()=>{await size(...button.dataset.size.split(',').map(Number));safeInsets();};
+document.querySelector('#layout').onclick=()=>{output.textContent=JSON.stringify({layout:layout(),state:state()},null,2);};
+document.querySelector('#home-preview').onclick=()=>home();
+document.querySelector('#play-preview').onclick=async()=>{home();click('start');await wait(250);win().dispatchEvent(new Event('blur'));el('pause-dialog').close();};
+async function normal({bail=false}={}){
+ click('start');await until(()=>state().x>230,'rolling');check(state().mode==='playing'&&!state().demo,'DROP IN → normal ROLL');
+ const w=state().width,h=state().height,x=w*.2,y=h-48;
+ pointer('pointerdown',101,x,y,'front-pad');pointer('pointerdown',202,w*.8,y,'rear-pad');pointer('pointermove',101,x+30,y,'front-pad');
+ check(state().roles.front===101&&state().roles.rear===202&&state().pointers.length===2,'FRONT/REAR independent pointer IDs');
+ await until(()=>state().charge>=.339,'full rear load');check(state().steer>0&&state().vx>248,'smooth FRONT drag and REAR load 1.00');
+ pointer('pointerup',202,w*.8,y,'rear-pad');check(state().phase==='air'&&state().roles.front===101,'REAR RELEASE → physics OLLIE; FRONT retained');
+ await wait(120);pointer('pointermove',101,x+30,y+8,'front-pad');check(state().tilt<0,'FRONT LEVEL torque');await wait(90);
+ pointer('pointerup',101,x+30,y+8,'front-pad');const selected=state().steer;check(selected>0&&!state().front,'FRONT lift retains steering');
+ pointer('pointerdown',203,w*.8,y,'rear-pad');await until(()=>state().phase!=='air','landing');check(state().phase==='roll'&&state().score>0&&state().bails===0,'LAND → SCORE → CONTINUE ROLLING');pointer('pointerup',203,w*.8,y,'rear-pad');
+ check(state().pointers.length===0&&state().steer===selected&&!state().catch,'no phantom pointers or catch');
+ if(bail){await until(()=>state().bails>0,'obstacle bail',6000);check(state().pointers.length===0,'BAIL clears pointers');await until(()=>state().phase==='roll','automatic reset');check(state().x<950,'BAIL → RESET to safe approach');}
+ click('pause');click('restart');await until(()=>state().x>225,'play again');check(state().score===0&&state().pointers.length===0&&state().phase==='roll','RESET → PLAY AGAIN');home();check(state().mode==='ready'&&!state().demo&&state().pointers.length===0,'BACK TO HOME cleans session');
+}
+async function lifecycle(){
+ click('start');let w=state().width,h=state().height;pointer('pointerdown',11,150,h-45);pointer('pointerdown',12,w-100,h-45);await wait(120);
+ for(let n=0;n<2;n++){await size(390,844);check(!el('rotate-screen').hidden&&state().blocked&&state().pointers.length===0&&!state().rear,'PORTRAIT gate clears active input');await size(844,390);check(el('rotate-screen').hidden&&el('pause-dialog').open,'real LANDSCAPE recovers');click('resume');await wait(60);check(state().phase==='roll'&&state().mode==='playing','rotation resumes cleanly');}
+ pointer('pointerdown',21,150,345);pointer('pointerdown',22,744,345);await wait(80);win().dispatchEvent(new Event('blur'));await wait(30);check(state().mode==='paused'&&state().pointers.length===0&&!state().catch,'background blur clears active input');
+ win().dispatchEvent(new Event('pagehide'));win().dispatchEvent(new Event('pageshow'));await wait(40);check(el('pause-dialog').open,'page return offers resume');click('resume');
+ pointer('pointerdown',23,744,345);await wait(100);pointer('pointercancel',23,744,345);check(state().phase==='roll'&&!state().rear&&state().roles.rear===null,'pointercancel never pops or strands REAR');
+ pointer('pointerdown',24,744,345);await wait(80);pointer('lostpointercapture',24,744,345);check(state().phase==='roll'&&state().pointers.length===0,'lost capture clears ownership');
+ click('pause');click('resume');await size(844,300);layoutCheck('Safari-height reduction');check(!state().blocked&&state().height===300,'browser-bar resize uses live height');await size(844,390);home();
+}
+document.querySelector('#run').onclick=async()=>{
+ const button=document.querySelector('#run');button.disabled=true;lines=[];errors=[];
+ try{
+ await reload();
+ for(const [w,h] of [[667,280],[844,390],[932,430]]){
+  home();await size(w,h);safeInsets();await wait(80);layoutCheck(`${w} × ${h} HOME`);
+  check(el('start').getBoundingClientRect().height>=44&&el('demo-start').getBoundingClientRect().height>=44,`${w} × ${h} HOME buttons usable`);
+  check(win().getComputedStyle(el('game')).transform==='none'&&win().getComputedStyle(el('park')).transform==='none'&&state().width===w&&state().height===h,`${w} × ${h} actual viewport; no game rotation`);
+  click('start');await wait(250);layoutCheck(`${w} × ${h} gameplay`);
+  const f=el('front-pad').getBoundingClientRect(),r=el('rear-pad').getBoundingClientRect(),s=state();
+  check(f.left>=44&&r.right<=w-44&&f.bottom<=h-21&&r.bottom<=h-21&&s.groundY<f.top,`${w} × ${h} safe areas and controls above browser edge`);
+  check(f.width>180&&r.width>180&&s.boardX/w>.25&&s.boardX/w<.40,`${w} × ${h} broad controls; board at left third`);
+  check(doc().elementFromPoint(w*.2,h*.5).id==='park'&&doc().elementFromPoint(w*.8,h*.5).id==='park',`${w} × ${h} invisible FRONT/REAR course zones unobstructed`);
+  click('pause');layoutCheck(`${w} × ${h} pause/Home/reset buttons`);click('home');click('demo-start');await wait(70);layoutCheck(`${w} × ${h} Demo`);home();
+ }
+ await size(844,390);await normal({bail:true});
+ click('demo-start');check(state().demo&&state().phase==='roll','HOME → EASY DEMO → ROLL');click('demo-pop');check(state().phase==='air','DEMO OLLIE → AIR');await until(()=>state().score>0,'demo landing');check(state().phase==='roll'&&state().bails===0,'DEMO assisted catch → LAND');home();await normal();
+ await lifecycle();
+ click('demo-start');home();click('start');check(!state().demo&&!state().catch,'DEMO → HOME → normal assistance isolation');home();
+ check(el('park').dispatchEvent(new (win().Event)('gesturestart',{bubbles:true,cancelable:true}))===false,'pinch-zoom default prevented');check(el('park').dispatchEvent(new (win().MouseEvent)('dblclick',{bubbles:true,cancelable:true}))===false,'double-tap default prevented');
+ await reload();check(state().mode==='ready'&&state().pointers.length===0,'reload → clean HOME');await normal();
+ check(errors.length===0,`browser runtime errors: ${errors.length}`);note('RELEASE WALKTHROUGH COMPLETE — synthetic pointer/lifecycle events; physical Safari acceptance remains required.');
+ }catch(error){note(`STOPPED: ${error.message}`);}finally{button.disabled=false;}
+};
+</script></html>

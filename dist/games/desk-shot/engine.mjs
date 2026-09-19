@@ -1,0 +1,4 @@
+export const MAX_SHOTS=5; export const TARGETS=[{x:.78,y:.23,r:.055,points:100,label:'100'},{x:.84,y:.49,r:.07,points:50,label:'50'},{x:.72,y:.72,r:.085,points:25,label:'25'}];
+export function clamp(v,a,b){return Math.max(a,Math.min(b,v))} export function shotVelocity(dx,dy){const m=Math.hypot(dx,dy);if(m<8)return null;const s=clamp(m,8,150)*5.25;return {vx:dx/m*s,vy:dy/m*s,power:clamp(m/150,0,1)}}
+export function targetScore(base,banks,power){let mult=1;if(banks>=2)mult=2;else if(banks===1)mult=1.5;if(power>.88)mult+=.25;return {points:Math.round(base*mult),mult}}
+export function reflect(v,n){return -v*n}

@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check-release.mjs"
+  },
+  "devDependencies": {
+    "vite": "^7.1.3"
+  },
+  "type": "module"
+}

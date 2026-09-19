@@ -1,0 +1,52 @@
+*{box-sizing:border-box;touch-action:none;-webkit-user-select:none;user-select:none}html,body,main{margin:0;width:100%;height:100%;overflow:hidden;background:#171512;font-family:Arial,sans-serif;color:#171512}canvas{position:absolute;width:100%;height:100%;background:#e8d9b8}header{position:absolute;top:max(8px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));right:max(14px,env(safe-area-inset-right));display:flex;gap:16px;align-items:center;font-size:12px}header b{font-size:22px}header #lap{margin-left:auto}.card{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(430px,72vw);padding:24px;background:#f2e6ca;border:3px solid #171512;box-shadow:8px 8px 0 #171512;text-align:center}.card h1{margin:0;font-size:clamp(24px,6vw,48px)}button{border:2px solid #171512;background:#c8ff1a;padding:12px 28px;font-weight:900;margin:12px}.hidden{display:none}.pad{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));width:29vw;max-width:240px;height:29vw;max-height:160px;border:2px solid #171512aa;background:#f2e6ca99;display:grid;place-items:center;font-weight:900}.pad i{width:48px;height:48px;border-radius:50%;background:#17151244}.pad label{position:absolute;top:8px}.pad em{position:absolute;bottom:6px;font-size:10px}.pad#gas{left:max(12px,env(safe-area-inset-left))}.pad#steer{right:max(12px,env(safe-area-inset-right))}
+
+#pause{margin:0;padding:0;width:40px;height:40px;border-radius:50%;flex-shrink:0;background:#171512;color:#f2e6ca}#pause:disabled{opacity:.4}#pause-panel{position:absolute;inset:0;z-index:10000;background:#17151288}#pause-panel .card{max-height:calc(100% - 24px);overflow:auto;padding:16px}#pause-panel h2{margin:0 0 8px}#pause-panel button{display:block;margin:8px auto;padding:10px 20px}
+
+/* V9 VISUAL LAYER — racing controls/physics intentionally untouched */
+:root{--v9-paper:#f0e1c2;--v9-ink:#171714;--v9-acid:#d5ff3f;--v9-race:#ff7654}
+main{position:relative;background:#241b13}main::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.22;background:repeating-linear-gradient(2deg,#ffffff16 0 1px,transparent 1px 8px),radial-gradient(circle at 77% 18%,#ffdda735,transparent 36%);mix-blend-mode:soft-light}canvas{z-index:0;filter:saturate(.96) contrast(1.03)}
+header{z-index:5;padding:7px 10px;border:1px solid #ffffff17;border-radius:8px;background:#0d0f0cc8;color:#f6ebd7;box-shadow:0 8px 20px #0006;backdrop-filter:blur(7px)}header b{display:inline-block;background:var(--v9-paper);color:var(--v9-ink);padding:4px 6px;font-size:19px;box-shadow:2px 3px 0 #0007;transform:rotate(-2deg)}header span{font-weight:800;letter-spacing:.04em}#pause{background:#171915;color:#f1e4cb;border-color:#f1e4cb55;box-shadow:0 5px 12px #0005}
+.card{z-index:5;background:linear-gradient(145deg,#f0e3c7,#d3bf9b);border:1px solid #fff8;color:var(--v9-ink);box-shadow:10px 12px 0 #0007,0 25px 42px #0008;transform:translate(-50%,-50%) rotate(-.28deg);border-radius:2px}.card::before{content:"TABLETOP RACING / 04";position:absolute;right:15px;top:-10px;padding:5px 8px;background:var(--v9-race);color:#34170f;font:900 9px/1 ui-monospace,monospace;letter-spacing:.11em;transform:rotate(2deg);box-shadow:2px 2px 0 #0004}.card p,.card small{color:#4c4a42}.card button,button{background:var(--v9-acid);border:1px solid #81993a;color:var(--v9-ink);box-shadow:4px 5px 0 #0005;border-radius:3px}
+.pad{z-index:4;border:1px solid #f0e3c955;background:linear-gradient(145deg,#f0e3c9d9,#cdbb98ce);box-shadow:7px 9px 0 #0005,0 18px 30px #0005;border-radius:12px;color:var(--v9-ink);backdrop-filter:blur(3px)}.pad::before{content:"";position:absolute;inset:7px;border:1px dashed #24251d26;border-radius:8px;pointer-events:none}.pad i{background:#17171422;border:2px solid #17171455;box-shadow:inset 0 2px 5px #0002}.pad#gas{border-bottom:7px solid var(--v9-race)}.pad#steer{border-bottom:7px solid #63bee9}.pad label{letter-spacing:.1em}.pad em{font-style:normal;font-weight:800;color:#4b443b}
+#pause-panel{background:#090b09bd;backdrop-filter:blur(4px)}#pause-panel .card{background:linear-gradient(145deg,#f0e3c7,#d3bf9b);border:1px solid #fff8;box-shadow:10px 12px 0 #0007}#pause-panel .card::before{content:"PIT TABLE";background:#dfc66e}#pause-panel button{box-shadow:3px 4px 0 #0004}
+a[aria-label="Back to SHRUNK"]{background:#efe2c9!important;color:#171814!important;border:1px solid #181815!important;box-shadow:3px 4px 0 #0006!important;border-radius:4px!important;backdrop-filter:none!important}
+@media(max-height:440px){header{padding:4px 7px}.card{padding:16px;box-shadow:6px 7px 0 #0005}.card::before{display:none}.pad{box-shadow:5px 6px 0 #0004}}
+
+/* =========================================================
+   V10 DEPTH + MATERIALS — TABLETOP RACING PRESENTATION ONLY
+   LEFT GAS/BOOST, RIGHT STEER, race physics/laps/checkpoints untouched.
+   ========================================================= */
+:root{--v10-warm:#f1c37a;--v10-paper:#f4e4c5;--v10-race:#ff7654;--v10-blue:#63bee9}
+main::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 76% 10%,#ffd99d38 0 13%,transparent 40%),
+    radial-gradient(ellipse at 15% 94%,#0009 0 20%,transparent 50%),
+    repeating-linear-gradient(96deg,transparent 0 81px,#00000012 82px,transparent 83px 163px);
+  mix-blend-mode:soft-light;
+}
+main::after{opacity:.34;background:repeating-linear-gradient(3deg,#ffffff16 0 1px,transparent 1px 9px),radial-gradient(circle at 77% 18%,#ffdda745,transparent 36%),linear-gradient(112deg,transparent 0 61%,#0002 62%,transparent 63%)}
+canvas{filter:saturate(1.03) contrast(1.045) drop-shadow(0 8px 11px #0002)}
+header{box-shadow:0 12px 28px #0008,inset 0 1px #ffffff18,inset 0 0 0 1px #0008}
+header b{box-shadow:2px 4px 0 #0008,0 7px 12px #0004,inset 0 1px #fff8}
+.card{
+  background:
+    repeating-linear-gradient(0deg,transparent 0 28px,#65695e20 29px 30px),
+    linear-gradient(148deg,#f6e7c9,#d3bd98 77%,#b99f78);
+  box-shadow:12px 15px 0 #0007,0 38px 72px #000b,inset 1px 1px #fff9,inset -1px -1px #826f5266;
+}
+.card::after{content:"";position:absolute;inset:8px -7px -7px 8px;z-index:-1;background:#b69f78;transform:rotate(.9deg);box-shadow:5px 6px 0 #0003}
+.pad{
+  background:
+    radial-gradient(circle at 18px 18px,#fff6 0 2px,#84745b 2.5px 3.5px,transparent 4px),
+    radial-gradient(circle at calc(100% - 18px) 18px,#fff6 0 2px,#84745b 2.5px 3.5px,transparent 4px),
+    linear-gradient(145deg,#f4e6cbdc,#c9b38ed4);
+  box-shadow:9px 12px 0 #0006,0 24px 40px #0007,inset 0 1px #fff9,inset 0 -1px #7f6d5066;
+}
+.pad i{box-shadow:inset 0 4px 9px #0004,0 5px 9px #0004;background:radial-gradient(circle at 35% 30%,#ffffff38,transparent 28%),#17171425}
+.pad#gas{border-bottom-color:var(--v10-race)}.pad#steer{border-bottom-color:var(--v10-blue)}
+#pause{box-shadow:0 7px 15px #0007,inset 0 1px #fff1}
+#pause-panel{background:#050605cf;backdrop-filter:blur(5px)}
+#pause-panel .card{box-shadow:12px 15px 0 #0007,0 38px 76px #000b}
+a[aria-label="Back to SHRUNK"]{box-shadow:3px 4px 0 #0007,0 9px 16px #0005!important}
+@media(max-height:440px){main::after{opacity:.22}.card::after{display:none}.pad{box-shadow:5px 7px 0 #0005,0 13px 23px #0006}}

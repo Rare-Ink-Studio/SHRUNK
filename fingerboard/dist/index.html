@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#151a17">
+  <meta name="description" content="SHRUNK Tabletop Sessions. A two-thumb fingerboard game: ollie, kickflip, catch, and land your line.">
+  <title>SHRUNK — Tabletop Sessions</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body><a href="../../" aria-label="Back to SHRUNK" style="position:fixed;z-index:9999;left:max(8px,env(safe-area-inset-left));bottom:max(8px,env(safe-area-inset-bottom));padding:7px 10px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(15,18,15,.78);color:#f3f0df;text-decoration:none;font:800 9px/1 system-ui;letter-spacing:.12em;backdrop-filter:blur(8px)">← SHRUNK</a>
+  <main data-state="ready" id="game" aria-label="SHRUNK fingerboard game">
+    <canvas id="park" aria-label="Side-view fingerboard skatepark. Use the touch pads or keyboard controls below."></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+    <header class="hud">
+      <div class="identity"><a class="wordmark" href="./" aria-label="SHRUNK home"><span>S</span><span>H</span><span>R</span><span>U</span><span>N</span><span>K</span></a><div class="session-label">TABLETOP<br><b>SESSIONS / 01</b></div></div>
+      <div class="scoreboard"><div class="score-block"><span class="eyebrow">SESSION SCORE</span><strong id="score">0000</strong></div><div class="best-block"><span class="eyebrow">YOUR BEST</span><strong id="best">0</strong></div></div>
+      <nav class="actions" aria-label="Game controls">
+        <button id="sound" class="icon-button" type="button" aria-label="Turn sound on" aria-pressed="false" title="Sound"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 9l5 6m0-6-5 6"/></svg></button>
+        <button id="help" class="icon-button" type="button" aria-label="How to play" title="How to play">?</button>
+        <button id="pause" class="icon-button" type="button" aria-label="Pause game" title="Pause (P)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg></button>
+      </nav>
+    </header>
+
+    <div class="park-label" aria-hidden="true"><span class="label-rule"></span><span>THE WORKBENCH</span><small>FREE SKATE</small></div>
+    <div id="trick" class="trick" role="status" aria-live="polite"><span id="trick-name"></span><strong id="trick-points"></strong></div>
+    <div id="line" class="line-status" aria-live="polite"></div>
+
+    <div id="start-screen" class="screen">
+      <div class="start-card">
+        <div class="chapter"><span>01</span> THE WORKBENCH</div>
+        <h1>FIND YOUR<br><em>FEEL.</em></h1>
+        <p>Two thumbs. One board. Make it land.</p>
+        <div class="start-buttons"><button id="start" class="primary" type="button">DROP IN</button><button id="demo-start" class="secondary" type="button">EASY DEMO</button></div>
+        <div class="start-note">THE TABLE <span>•</span> FIND A LINE. CHAIN IT. ROLL AWAY.</div>
+      </div>
+      <div class="intro-tip"><span class="tip-number">01 / GET THE FEEL</span><p>Hold the right pad, then release to pop.<br>Press again in the air to catch your board.</p></div>
+    </div>
+
+    <div id="demo-controls" class="demo-controls" hidden><span>Auto roll · Auto catch<br>Tap before a ledge</span><button id="demo-pop" class="primary" type="button">OLLIE</button></div>
+    <div class="controls" id="controls" hidden>
+      <div class="control-pad front" id="front-pad" role="group" aria-label="Front finger: slide left and right for speed, drag up or down to tilt the board">
+        <div class="pad-indicator"><div class="puck" id="front-puck"></div><span class="axis-h"></span><span class="axis-v"></span></div>
+        <div class="pad-copy"><span class="eyebrow">LEFT THUMB · FRONT FINGER</span><strong>STEER & LEVEL</strong><span class="pad-instruction">Slide to steer. Drag to level. Air: flick up-diagonal to kickflip.</span><span class="keyboard-hint"><kbd>←</kbd><kbd>→</kbd> speed <kbd>↑</kbd><kbd>↓</kbd> tilt</span></div>
+      </div>
+      <div class="ride-status"><span id="phase">READY TO ROLL</span><div class="load-track"><i id="load-fill"></i></div><small id="next-obstacle">LOAD → POP → CATCH → LAND</small></div>
+      <div class="control-pad rear" id="rear-pad" role="group" aria-label="Rear finger: hold to load the tail, release to pop, press again in the air to catch">
+        <div class="pad-copy"><span class="eyebrow">RIGHT THUMB · REAR FINGER</span><strong>LOAD & POP</strong><span class="pad-instruction">Hold. Release. Press again to catch.</span><span class="keyboard-hint"><kbd>SPACE</kbd> hold / release / catch</span></div>
+        <div class="pop-ring" id="pop-ring"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 15 7-7 7 7M12 8v12"/></svg></div>
+      </div>
+    </div>
+
+    <div id="rotate-screen" class="rotate-screen" hidden>
+      <div class="rotate-glyph" aria-hidden="true">↻</div><div class="wordmark small" aria-label="SHRUNK"><span>S</span><span>H</span><span>R</span><span>U</span><span>N</span><span>K</span></div>
+      <h2>TURN YOUR PHONE</h2><p>This session plays in landscape.</p>
+    </div>
+    <noscript>This game needs JavaScript enabled to play.</noscript>
+  </main>
+    <dialog id="help-dialog" class="modal">
+      <button class="dialog-close icon-button" type="button" data-close="help-dialog" aria-label="Close instructions">×</button>
+      <span class="eyebrow">A LITTLE PRACTICE GOES A LONG WAY</span>
+      <h2>Make your first ollie.</h2>
+      <p>Easy Demo: tap OLLIE (or Space). The board rolls, pops and catches for you. You choose when to jump.</p>
+      <ol class="howto"><li><b>ROLL</b><span>The board rolls for you. Slide the left pad to adjust your speed.</span></li><li><b>LOAD & POP</b><span>Hold the right pad to load the tail. Release when the bar fills to pop higher. A quick upward flick adds a little extra pop.</span></li><li><b>LEVEL, FLIP & CATCH</b><span>Drag on the left pad to level the deck. For a kickflip, pop first, then flick the left/front pad quickly up and diagonally sideways. Press the right/rear pad in the air to catch it.</span></li><li><b>LAND</b><span>Bring the wheels down level with the surface. Clean ollies build your score and line multiplier.</span></li></ol>
+      <p class="desktop-help">Keyboard: ← / → speed · ↑ / ↓ tilt · Space load, pop & catch · P pause · R restart.</p>
+      <p class="small-note">Kickflips are available in DROP IN. Easy Demo stays ollie-only. Your best score is saved on this browser.</p>
+      <button class="primary" type="button" data-close="help-dialog">GOT IT. LET’S SKATE.</button>
+    </dialog>
+    <dialog id="pause-dialog" class="modal compact">
+      <span class="eyebrow">TAKE A BREATHER</span><h2>Session paused.</h2>
+      <button id="resume" class="primary" type="button">KEEP SKATING</button>
+      <button id="switch-mode" class="secondary" type="button">SWITCH TO EASY DEMO</button>
+      <button id="home" class="secondary" type="button">BACK TO HOME</button>
+      <button id="restart" class="secondary" type="button">START A FRESH SESSION</button>
+    </dialog>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

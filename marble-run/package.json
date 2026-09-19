@@ -1,0 +1,1 @@
+{"scripts":{"test":"node --test","check":"node scripts/check-release.mjs"},"type":"module"}

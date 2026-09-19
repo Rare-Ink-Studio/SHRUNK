@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#151a17">
+  <meta name="description" content="SHRUNK. You've been shrunk. The table is the world.">
+  <title>SHRUNK</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div class="wordmark" aria-label="SHRUNK"><span>S</span><span>H</span><span>R</span><span>U</span><span>N</span><span>K</span></div>
+      <p class="kicker">YOU'VE BEEN SHRUNK.</p>
+      <h1>THE TABLE<br>IS THE WORLD.</h1>
+      <p class="lede">Pick a session and play.</p>
+      <section class="progress-card" aria-label="SHRUNK Infinite Loop progress">
+        <div class="progress-head"><div><small>THE INFINITE LOOP · TODAY</small><strong id="daily-count">0/3</strong></div><div><small>THIS WEEK</small><strong id="week-days">0/5 DAYS</strong></div><div class="coins"><small>WEEK COINS</small><strong id="coin-count">0/64</strong></div></div>
+        <div class="coin-track"><i id="coin-fill"></i></div>
+        <ul id="daily-list" class="daily-list"></ul>
+        <div class="weekly"><div><small>WEEKLY SESSION</small><b id="weekly-copy">WORLD TOUR</b></div><div class="weekly-right"><small>STREAK</small><b id="streak-count">0 DAYS</b></div><strong id="weekly-status">0/4 GAMES</strong></div>
+        <div class="week-feature"><div><small>WEEK THEME</small><b id="week-theme">WORLD TOUR</b><span id="week-theme-copy">Touch every corner of SHRUNK.</span></div><div><small>WEEKLY BOSS</small><b id="boss-label">BOSS CHALLENGE</b><span id="boss-status">0/1</span></div></div>
+        <div class="week-map" aria-label="Weekly participation">
+          <div><small>THIS WEEK</small><span id="week-dots" class="week-dots"></span></div>
+          <div><small>WORLD TOUR</small><span id="world-games" class="world-games"></span></div>
+        </div>
+        <div id="next-move" class="next-move"><small>NEXT MOVE</small><strong>Pick a session.</strong><span>Every completed challenge moves the week forward.</span></div>
+        <div id="ticket-state" class="ticket-state"><strong>BUILD THE WEEK</strong><span>COINS + DAILY SESSIONS + WORLD TOUR</span></div>
+      </section>
+    </header>
+    <section class="games" aria-label="SHRUNK games">
+      <a class="game primary" href="./games/fingerboard/">
+        <span class="num">01</span><div><small>TABLETOP SESSIONS</small><strong>FINGERBOARD</strong><p>Two thumbs. One board. Find your line.</p></div><b>DROP IN →</b>
+      </a>
+      <a class="game" href="./games/desk-shot/">
+        <span class="num">02</span><div><small>FIVE SHOTS</small><strong>DESK SHOT</strong><p>Drag. Release. Bank it. Score.</p></div><b>PLAY →</b>
+      </a>
+      <a class="game" href="./games/marble-run/">
+        <span class="num">03</span><div><small>ROLL THE WORLD</small><strong>MARBLE RUN</strong><p>Guide the marble through the desk.</p></div><b>ROLL →</b>
+      </a>
+      <a class="game" href="./games/tabletop-racing/">
+        <span class="num">04</span><div><small>TWO LAPS</small><strong>TABLETOP RACING</strong><p>Steer. Gas. Boost. Stay on the table.</p></div><b>RACE →</b>
+      </a>
+    </section>
+    <footer>SHRUNK · TABLETOP WORLD</footer>
+  </main>
+  <script type="module" src="./home.mjs"></script>
+</body>
+</html>
